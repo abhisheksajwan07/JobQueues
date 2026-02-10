@@ -2,6 +2,7 @@ CREATE TABLE jobs(
     id BIGSERIAL PRIMARY KEY,
     type VARCHAR(100) NOT NULL,
     payload JSONB NOT NULL,
+    idempotency_key TEXT UNIQUE,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
     attempts INTEGER NOT NULL DEFAULT 0,
     max_attempts INTEGER NOT NULL DEFAULT 3,
