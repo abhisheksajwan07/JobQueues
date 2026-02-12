@@ -11,10 +11,10 @@ export interface Job {
   type: JobType;
   payload: any;
   status: JobStatus;
-  
+
   max_attempts: number;
   attempts: number;
-  locked_until?:Date;
+  locked_until?: Date;
   error_message: string | null;
   scheduled_for: Date | null;
   created_at: Date;
@@ -52,3 +52,5 @@ export type JobPayLoad =
   | PaymentPayload
   | ReportPayload
   | MediaPayload;
+
+export type JobHandler = (job: Job) => Promise<void>;

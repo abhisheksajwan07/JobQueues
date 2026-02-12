@@ -4,7 +4,8 @@ export default function parseJob(row: any): Job {
   return {
     id: Number(row.id),
     type: row.type as JobType,
-    payload: row.payload,
+    payload:
+     row.payload ,
     status: row.status,
     attempts: row.attempts,
     max_attempts: row.max_attempts,
