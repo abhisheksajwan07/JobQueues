@@ -11,9 +11,12 @@ export const query = (text: string, params?: any[]) => {
   return pool.query(text, params);
 };
 
+export const getPool = (): Pool => {
+  return pool;
+};
 const testConnection = async () => {
   try {
-    const client = await pool.connect();
+    const client = await getPool().connect();
     console.log("Connected to database successfully");
     client.release();
   } catch (err) {
