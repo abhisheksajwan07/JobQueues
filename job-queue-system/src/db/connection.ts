@@ -14,15 +14,6 @@ export const query = (text: string, params?: any[]) => {
 export const getPool = (): Pool => {
   return pool;
 };
-const testConnection = async () => {
-  try {
-    const client = await getPool().connect();
-    console.log("Connected to database successfully");
-    client.release();
-  } catch (err) {
-    console.error("Error connecting to database:", err);
-  }
-};
-if (require.main === module) {
-  testConnection();
-}
+
+
+
