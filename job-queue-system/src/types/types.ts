@@ -2,14 +2,15 @@ export type JobType =
   | "send_email"
   | "process_media"
   | "process_payment"
-  | "generate_report";
+  | "generate_report"
+  | "failing_test";
 
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
 export interface Job {
   id: number;
   type: JobType;
-  payload: any;
+  payload: JobPayLoad;
   status: JobStatus;
 
   max_attempts: number;
@@ -47,10 +48,15 @@ export interface MediaPayload {
   destinationPath: string;
 }
 
+export interface TestPayload {
+  [key: string]: any;
+}
+
 export type JobPayLoad =
   | EmailPayload
   | PaymentPayload
   | ReportPayload
-  | MediaPayload;
+  | MediaPayload
+  | TestPayload;
 
 export type JobHandler = (job: Job) => Promise<void>;
