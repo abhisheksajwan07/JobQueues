@@ -9,9 +9,14 @@ CREATE TABLE jobs(
     error_message TEXT,
     scheduled_for TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     locked_until TIMESTAMPTZ,
+    retry_strategy VARCHAR(20),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+
+
+
 
 CREATE INDEX idx_jobs_status_scheduled ON
 jobs (status,scheduled_for);

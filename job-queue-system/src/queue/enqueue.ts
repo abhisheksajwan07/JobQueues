@@ -1,5 +1,4 @@
 import { randomUUID } from "crypto";
-
 import { JobType, JobPayLoad, Job } from "../types/types";
 import { getPool, query } from "../db/connection";
 import parseJob from "../helper/helper";
@@ -35,7 +34,7 @@ export async function enqueue(
     }
 
     if (row.is_new) {
-      await client.query(`NOTIFY new_job `);
+      await client.query('NOTIFY new_job');
     }
     await client.query("COMMIT");
     return parseJob(row);
