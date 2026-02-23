@@ -3,7 +3,14 @@ export type JobType =
   | "process_media"
   | "process_payment"
   | "generate_report"
-  | "failing_test";
+  | "failing_test"
+  | "test:no-retry"
+  | "test:retry_long"
+  | "test:retry-short"
+  | "test-success"
+  | "test:pg-error"
+  | "test:http-error"
+  | "email:send";
 
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
