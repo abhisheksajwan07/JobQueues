@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+     "run-worker":" ts-node src/queue/worker.ts",
+     "test-fail":" ts-node src/test/test.failing.ts",
+     "test-enqueue":" ts-node src/test/test.enqueue.ts",
+     "test-many-jobs":"ts-node src/test/test.many.jobs.ts",
+     "test-retries":"ts-node src/test/test-retries.ts"
+
   },
   "keywords": [],
   "author": "",
