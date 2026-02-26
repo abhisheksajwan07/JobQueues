@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { JobType, JobPayLoad, Job } from "../types/types";
-import { getPool, query } from "../db/connection";
+import { getPool,} from "../db/connection";
 import parseJob from "../helper/helper";
 
 export async function enqueue(
