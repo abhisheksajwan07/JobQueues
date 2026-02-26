@@ -10,7 +10,8 @@ export type JobType =
   | "test-success"
   | "test:pg-error"
   | "test:http-error"
-  | "email:send";
+  | "email:send"
+  | "test-email";
 
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
@@ -24,6 +25,7 @@ export interface Job {
   attempts: number;
   locked_until?: Date;
   error_message: string | null;
+  retry_strategy: string;
   scheduled_for: Date | null;
   created_at: Date;
   updated_at: Date;
