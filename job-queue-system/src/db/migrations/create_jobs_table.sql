@@ -14,10 +14,6 @@ CREATE TABLE jobs(
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-
-
-
-
 CREATE INDEX idx_jobs_status_scheduled ON
 jobs (status,scheduled_for);
 
