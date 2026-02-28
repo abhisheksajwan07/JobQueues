@@ -9,6 +9,7 @@ import {
   RetryStrategy,
 } from "../error/retry-classifier";
 import { Job } from "../types/types";
+import { moveToDlq } from "./dlq";
 
 export class Worker {
   private pool: Pool;
@@ -83,7 +84,6 @@ export class Worker {
   private async workerLoop(workerId: number): Promise<void> {
     console.log(`Worker #${workerId} ready`);
     while (this.isRunning) {
-      
       const job = await this.claimJob();
 
       if (!job) {
@@ -96,7 +96,7 @@ export class Worker {
         await this.completeJob(job.id);
       } catch (err) {
         console.error(`Job ${job.id} failed`, err);
-        await this.failJob(job.id, err as Error);
+        await this.failJob(job, err as Error);
       }
     }
     console.log(`Worker #${workerId} stopped`);
@@ -138,7 +138,7 @@ export class Worker {
       return job;
     } catch (err) {
       await client.query("ROLLBACK");
-      throw err; // never swallow errors
+      throw err;
     } finally {
       client.release();
     }
@@ -158,7 +158,7 @@ export class Worker {
     console.log(` Job #${jobId} completed`);
   }
 
-  private async failJob(jobId: number, error: Error): Promise<void> {
+  private async failJob(job: Job, error: Error): Promise<void> {
     const client = await this.pool.connect();
 
     try {
@@ -170,15 +170,15 @@ export class Worker {
         SET attempts = attempts+1
         WHERE id=$1
         RETURNING attempts`,
-        [jobId],
+        [job.id],
       );
       const newAttempts: number = result.rows[0].attempts;
 
       const strategy: RetryStrategy = classifyError(error);
       const maxAttempts = getMaxAttempts(strategy);
 
-      this.logFailure(jobId, error, strategy, newAttempts, maxAttempts);
-      await this.updateRetryStrategy(client, jobId, strategy);
+      this.logFailure(job.id, error, strategy, newAttempts, maxAttempts);
+      await this.updateRetryStrategy(client, job.id, strategy);
 
       const shouldFailPermanently =
         strategy === "no_retry" || newAttempts >= maxAttempts;
@@ -189,24 +189,15 @@ export class Worker {
             ? error.message
             : `max attempts reached: ${error.message}`;
 
-        await client.query(
-          `UPDATE jobs
-          SET status='failed',
-              error_message=$1,
-              retry_strategy=$2,
-              locked_until=NULL,
-              updated_at=NOW()
-          WHERE id=$3`,
-          [reason,strategy,jobId]
-        )
+        await moveToDlq(client, job, reason, strategy);
         await client.query("COMMIT");
-        console.log(`Job #${jobId} permanently failed — ${reason}`);
+
         return;
       }
 
       await this.scheduleRetry(
         client,
-        jobId,
+        job.id,
         error,
         strategy,
         newAttempts,
