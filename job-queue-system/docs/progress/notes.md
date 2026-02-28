@@ -59,3 +59,15 @@ As a result, each job is claimed by only one worker under concurrent load.`
 
 ## final test 
 ![](finalTest.png)
+
+
+## DLQ test 
+
+![](dlqTestResult.png)
+![](DlqDb.png)
+
+DLQ integration test passed.
+Permanent failures move to DLQ, retries work, requeue restores job, duplicate requeue blocked.
+
+DLQ integration test passed.
+Permanent failures moves to DLQ,retries work , requeue restores a job, duplicate requeue blocked.
